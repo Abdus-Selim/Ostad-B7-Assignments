@@ -1,8 +1,25 @@
+import 'dart:io';
+
 import 'package:flutter/material.dart';
 import 'package:module_12_assignment_app/Widgets/responsive_builder.dart';
 import 'package:module_12_assignment_app/my_drawer.dart';
+import 'package:window_manager/window_manager.dart';
 
-void main() {
+Future<void> main() async {
+  WidgetsFlutterBinding.ensureInitialized();
+  // Must add this line.
+  if (Platform.isWindows || Platform.isLinux || Platform.isMacOS) {
+    await windowManager.ensureInitialized();
+
+    WindowOptions windowOptions = const WindowOptions(
+      minimumSize: Size(400, 600),
+      center: true,
+    );
+    windowManager.waitUntilReadyToShow(windowOptions, () async {
+      await windowManager.show();
+      await windowManager.focus();
+    });
+  }
   runApp(const MyApp());
 }
 
@@ -87,6 +104,7 @@ class HomeScreen extends StatelessWidget {
                 "FLUTTER WEB.\nTHE BASICS",
                 style: TextStyle(
                   fontSize: 30,
+                  height: 1,
                   fontWeight: FontWeight.w900,
                 ),
                 textAlign: TextAlign.center,
@@ -170,6 +188,7 @@ class HomeScreen extends StatelessWidget {
                   const Text(
                     "FLUTTER WEB.\nTHE BASICS",
                     style: TextStyle(
+                      height: 1,
                       fontSize: 30,
                       fontWeight: FontWeight.w900,
                     ),
