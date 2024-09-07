@@ -12,6 +12,6 @@ class PriceList {
   PriceList() {
     totalPrice = (pulloverQuantity * pulloverPrice) +
         (blackTshirtQuantity * blackTshirtPrice) +
-        (sportDressQuantity + sportDressPrice);
+        (sportDressQuantity * sportDressPrice);
   }
 }

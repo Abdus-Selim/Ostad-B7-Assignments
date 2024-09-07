@@ -9,16 +9,23 @@ class HomeScreen extends StatefulWidget {
 }
 
 class _HomeScreenState extends State<HomeScreen> {
+  CongratsSnackbar(message, context) {
+    return ScaffoldMessenger.of(context)
+        .showSnackBar(SnackBar(content: Text(message)));
+  }
+
   final PriceList priceList = PriceList();
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      backgroundColor: Color(0xFFF9F9F9),
       appBar: AppBar(
         title: const Text(
           "My Bag",
           style: TextStyle(fontSize: 24, fontWeight: FontWeight.bold),
         ),
+        backgroundColor: Color(0xFFF9F9F9),
         centerTitle: false,
       ),
       body: Column(
@@ -28,27 +35,11 @@ class _HomeScreenState extends State<HomeScreen> {
           _pulloverTshirt(),
           _blackTshirt(),
           _sportDress(),
-          const SizedBox(height: 200),
+          const SizedBox(height: 180),
           Expanded(
             child: Padding(
               padding: const EdgeInsets.all(16.0),
-              child: Column(
-                children: [
-                  Row(
-                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                    children: [
-                      Text("Total amount:"),
-                      Text(
-                        priceList.totalPrice.toString() + "\$",
-                        style: TextStyle(
-                          fontSize: 24,
-                          fontWeight: FontWeight.bold,
-                        ),
-                      ),
-                    ],
-                  ),
-                ],
-              ),
+              child: _build_checkout_section(),
             ),
           ),
         ],
@@ -74,7 +65,7 @@ class _HomeScreenState extends State<HomeScreen> {
           trailing: Column(
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
-              Icon(Icons.more_vert),
+              const Icon(Icons.more_vert),
               Text(
                 "\$${priceList.pulloverPrice}",
                 style:
@@ -92,8 +83,8 @@ class _HomeScreenState extends State<HomeScreen> {
           subtitle: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              Row(
-                children: const [
+              const Row(
+                children: [
                   Text("Color: Black"),
                   SizedBox(width: 16),
                   Text("Size: L"),
@@ -112,9 +103,9 @@ class _HomeScreenState extends State<HomeScreen> {
                     },
                     icon: const Icon(Icons.remove),
                   ),
-                  SizedBox(width: 16),
+                  const SizedBox(width: 16),
                   Text(priceList.pulloverQuantity.toString()),
-                  SizedBox(width: 16),
+                  const SizedBox(width: 16),
                   IconButton(
                     onPressed: () {
                       setState(() {
@@ -151,7 +142,7 @@ class _HomeScreenState extends State<HomeScreen> {
           trailing: Column(
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
-              Icon(Icons.more_vert),
+              const Icon(Icons.more_vert),
               Text(
                 "${priceList.blackTshirtPrice}\$",
                 style:
@@ -160,7 +151,7 @@ class _HomeScreenState extends State<HomeScreen> {
             ],
           ),
           title: const Text(
-            "Black T-Shirt",
+            "T-Shirt",
             style: TextStyle(
               fontSize: 16,
               fontWeight: FontWeight.bold,
@@ -169,9 +160,9 @@ class _HomeScreenState extends State<HomeScreen> {
           subtitle: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              Row(
-                children: const [
-                  Text("Color: Black"),
+              const Row(
+                children: [
+                  Text("Color: Grey"),
                   SizedBox(width: 16),
                   Text("Size: L"),
                 ],
@@ -189,9 +180,9 @@ class _HomeScreenState extends State<HomeScreen> {
                     },
                     icon: const Icon(Icons.remove),
                   ),
-                  SizedBox(width: 16),
+                  const SizedBox(width: 16),
                   Text(priceList.blackTshirtQuantity.toString()),
-                  SizedBox(width: 16),
+                  const SizedBox(width: 16),
                   IconButton(
                     onPressed: () {
                       setState(() {
@@ -228,7 +219,7 @@ class _HomeScreenState extends State<HomeScreen> {
           trailing: Column(
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
-              Icon(Icons.more_vert),
+              const Icon(Icons.more_vert),
               Text(
                 "${priceList.sportDressPrice}\$",
                 style:
@@ -246,8 +237,8 @@ class _HomeScreenState extends State<HomeScreen> {
           subtitle: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              Row(
-                children: const [
+              const Row(
+                children: [
                   Text("Color: Black"),
                   SizedBox(width: 16),
                   Text("Size: M"),
@@ -266,9 +257,9 @@ class _HomeScreenState extends State<HomeScreen> {
                     },
                     icon: const Icon(Icons.remove),
                   ),
-                  SizedBox(width: 16),
+                  const SizedBox(width: 16),
                   Text(priceList.sportDressQuantity.toString()),
-                  SizedBox(width: 16),
+                  const SizedBox(width: 16),
                   IconButton(
                     onPressed: () {
                       setState(() {
@@ -284,6 +275,47 @@ class _HomeScreenState extends State<HomeScreen> {
           ),
         ),
       ),
+    );
+  }
+
+  Widget _build_checkout_section() {
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.stretch,
+      children: [
+        Row(
+          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+          children: [
+            const Text("Total amount:"),
+            Text(
+              priceList.totalPrice.toString() + "\$",
+              style: const TextStyle(
+                fontSize: 24,
+                fontWeight: FontWeight.bold,
+              ),
+            ),
+          ],
+        ),
+        const SizedBox(height: 20),
+        ElevatedButton(
+          style: ElevatedButton.styleFrom(
+            backgroundColor: const Color(0xFFdb3121),
+            padding: const EdgeInsets.symmetric(vertical: 15),
+            shape: const RoundedRectangleBorder(
+                borderRadius: BorderRadius.all(Radius.circular(30))),
+          ),
+          onPressed: () {
+            CongratsSnackbar(
+                "Congratulations! Your checkout is Done!", context);
+          },
+          child: const Text(
+            "CHECK OUT",
+            style: TextStyle(
+              fontSize: 16,
+              color: Colors.white,
+            ),
+          ),
+        ),
+      ],
     );
   }
 }
