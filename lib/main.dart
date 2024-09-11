@@ -2,15 +2,15 @@ import 'package:flutter/material.dart';
 import 'package:module_12_assignment_app/Screens/home_screen.dart';
 
 void main() {
-  runApp(MyBag());
+  runApp(const MyApp());
 }
 
-class MyBag extends StatelessWidget {
-  const MyBag({super.key});
+class MyApp extends StatelessWidget {
+  const MyApp({super.key});
 
   @override
   Widget build(BuildContext context) {
-    return MaterialApp(
+    return const MaterialApp(
       debugShowCheckedModeBanner: false,
       home: HomeScreen(),
     );

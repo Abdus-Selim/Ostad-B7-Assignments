@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
-import 'package:module_12_assignment_app/utils/price_list.dart';
+import 'package:module_12_assignment_app/utils/bag_items_screen.dart';
+import 'package:module_12_assignment_app/utils/total_price.dart';
 
 class HomeScreen extends StatefulWidget {
   const HomeScreen({super.key});
@@ -9,313 +10,231 @@ class HomeScreen extends StatefulWidget {
 }
 
 class _HomeScreenState extends State<HomeScreen> {
+  final bag_item = MyBagScreen().bagItems;
+
   CongratsSnackbar(message, context) {
     return ScaffoldMessenger.of(context)
         .showSnackBar(SnackBar(content: Text(message)));
   }
 
-  final PriceList priceList = PriceList();
+  final TotalPrice totalPrice = TotalPrice();
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: Color(0xFFF9F9F9),
+      backgroundColor: Colors.grey.shade300,
       appBar: AppBar(
         title: const Text(
           "My Bag",
           style: TextStyle(fontSize: 24, fontWeight: FontWeight.bold),
         ),
-        backgroundColor: Color(0xFFF9F9F9),
+        backgroundColor: Colors.grey.shade300,
         centerTitle: false,
       ),
-      body: Column(
-        mainAxisAlignment: MainAxisAlignment.start,
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          _pulloverTshirt(),
-          _blackTshirt(),
-          _sportDress(),
-          const SizedBox(height: 180),
-          Expanded(
-            child: Padding(
-              padding: const EdgeInsets.all(16.0),
-              child: _build_checkout_section(),
+      body: Padding(
+        padding: const EdgeInsets.symmetric(horizontal: 16.0),
+        child: Column(
+          children: [
+            Expanded(
+              child: _buildCardListViewBuilder(),
             ),
+            Row(
+              children: [
+                build_checkout_section(),
+              ],
+            )
+          ],
+        ),
+      ),
+    );
+  }
+
+  Widget _buildCardListViewBuilder() {
+    return ListView.builder(
+      itemCount: bag_item.length,
+      itemBuilder: (context, index) {
+        return Padding(
+          padding: const EdgeInsets.symmetric(vertical: 8.0),
+          child: _buildCardDesign(index),
+        );
+      },
+    );
+  }
+
+  Widget _buildCardDesign(int index) {
+    return Card(
+      color: Colors.grey.shade200,
+      child: SizedBox(
+        height: 126,
+        width: double.infinity,
+        child: Padding(
+          padding: const EdgeInsets.all(2.0),
+          child: Row(
+            children: [
+              Image.network(
+                bag_item[index].itemImage,
+                fit: BoxFit.fitHeight,
+              ),
+              const SizedBox(width: 8),
+              Expanded(
+                child: Column(
+                  mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                  children: [
+                    Flexible(
+                      child: RichText(
+                        text: TextSpan(
+                          children: [
+                            TextSpan(
+                              text: "${bag_item[index].itemTitle}\n",
+                              style: const TextStyle(
+                                fontSize: 23,
+                                color: Colors.black,
+                                fontWeight: FontWeight.bold,
+                              ),
+                            ),
+                            TextSpan(
+                              text: "Color: ",
+                              style: TextStyle(
+                                color: Colors.grey.shade600,
+                              ),
+                            ),
+                            TextSpan(
+                              text: bag_item[index].itemColor,
+                              style: const TextStyle(
+                                color: Colors.black,
+                              ),
+                            ),
+                            // SizedBox(width: 8.0),
+                            TextSpan(
+                              text: "   Size: ",
+                              style: TextStyle(color: Colors.grey.shade600),
+                            ),
+                            TextSpan(
+                              text: bag_item[index].itemSize,
+                              style: const TextStyle(color: Colors.black),
+                            ),
+                          ],
+                        ),
+                      ),
+                    ),
+                    _iconButtons(index),
+                  ],
+                ),
+              ),
+              Padding(
+                padding: const EdgeInsets.all(8.0),
+                child: Column(
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  crossAxisAlignment: CrossAxisAlignment.end,
+                  children: [
+                    Icon(
+                      Icons.more_vert,
+                      color: Colors.grey.shade600,
+                    ),
+                    Text(
+                      "${bag_item[index].itemPrice}\$",
+                      style: const TextStyle(
+                        fontSize: 20,
+                        fontWeight: FontWeight.bold,
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+            ],
           ),
+        ),
+      ),
+    );
+  }
+
+  Widget _iconButtons(int index) {
+    return Row(
+      children: [
+        IconButton(
+          onPressed: () {
+            if (bag_item[index].itemQuantity > 1) {
+              bag_item[index].itemQuantity--;
+              totalPrice.calculateTotalPrice(bag_item);
+            }
+            print(totalPrice.calculateTotalPrice(bag_item));
+            print(bag_item[index].itemQuantity);
+
+            setState(() {});
+          },
+          icon: const Icon(Icons.remove),
+          style: _buildIconForm(),
+        ),
+        const SizedBox(width: 8),
+        Text(
+          bag_item[index].itemQuantity.toString(),
+          style: const TextStyle(fontSize: 16),
+        ),
+        const SizedBox(width: 8.0),
+        IconButton(
+          onPressed: () {
+            bag_item[index].itemQuantity++;
+            totalPrice.calculateTotalPrice(bag_item);
+
+            setState(() {});
+            // print(totalPrice
+            //     .calculateTotalPrice(bag_item));
+            // print(bag_item[index].itemQuantity);
+          },
+          icon: const Icon(Icons.add),
+          style: _buildIconForm(),
+        ),
+      ],
+    );
+  }
+
+  Widget build_checkout_section() {
+    return Expanded(
+      child: Column(
+        // mainAxisAlignment: MainAxisAlignment.spaceBetween,
+        children: [
+          Row(
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            children: [
+              const Text("Total amount: "),
+              Text(
+                "${totalPrice.calculateTotalPrice(bag_item)}\$",
+                style:
+                    const TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
+              ),
+            ],
+          ),
+          Column(
+            crossAxisAlignment: CrossAxisAlignment.stretch,
+            children: [
+              ElevatedButton(
+                onPressed: () {
+                  CongratsSnackbar("Your check out is successful!", context);
+                },
+                style: ElevatedButton.styleFrom(
+                  backgroundColor: Colors.red,
+                  foregroundColor: Colors.grey.shade200,
+                  minimumSize: const Size(double.infinity, 50),
+                ),
+                child: const Text(
+                  "CHECK OUT",
+                  style: TextStyle(fontSize: 16),
+                ),
+              ),
+              const SizedBox(height: 30),
+            ],
+          )
         ],
       ),
     );
   }
 
-  Widget _pulloverTshirt() {
-    return Padding(
-      padding: const EdgeInsets.all(8.0),
-      child: Card(
-        shape: RoundedRectangleBorder(
-          borderRadius: BorderRadius.circular(10),
-        ),
-        child: ListTile(
-          contentPadding:
-              const EdgeInsets.only(left: 20, right: 20, top: 0, bottom: 0),
-          leading: Image.network(
-            'https://blacknavybd.com/wp-content/uploads/2023/05/Black-oversized-tshirt-3.jpg',
-            height: 100,
-            width: 60,
-          ),
-          trailing: Column(
-            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-            children: [
-              const Icon(Icons.more_vert),
-              Text(
-                "\$${priceList.pulloverPrice}",
-                style:
-                    const TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
-              ),
-            ],
-          ),
-          title: const Text(
-            "Pullover",
-            style: TextStyle(
-              fontSize: 16,
-              fontWeight: FontWeight.bold,
-            ),
-          ),
-          subtitle: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              const Row(
-                children: [
-                  Text("Color: Black"),
-                  SizedBox(width: 16),
-                  Text("Size: L"),
-                ],
-              ),
-              Row(
-                children: [
-                  IconButton(
-                    onPressed: () {
-                      setState(() {
-                        if (priceList.pulloverQuantity > 1) {
-                          priceList.pulloverQuantity--;
-                          priceList.totalPrice -= priceList.pulloverPrice;
-                        }
-                      });
-                    },
-                    icon: const Icon(Icons.remove),
-                  ),
-                  const SizedBox(width: 16),
-                  Text(priceList.pulloverQuantity.toString()),
-                  const SizedBox(width: 16),
-                  IconButton(
-                    onPressed: () {
-                      setState(() {
-                        priceList.pulloverQuantity++;
-                        priceList.totalPrice += priceList.pulloverPrice;
-                      });
-                    },
-                    icon: const Icon(Icons.add),
-                  ),
-                ],
-              ),
-            ],
-          ),
-        ),
-      ),
-    );
-  }
-
-  Widget _blackTshirt() {
-    return Padding(
-      padding: const EdgeInsets.all(8.0),
-      child: Card(
-        shape: RoundedRectangleBorder(
-          borderRadius: BorderRadius.circular(10),
-        ),
-        child: ListTile(
-          contentPadding:
-              const EdgeInsets.only(left: 20, right: 20, top: 0, bottom: 0),
-          leading: Image.network(
-            'https://blacknavybd.com/wp-content/uploads/2023/05/Black-oversized-tshirt-3.jpg',
-            height: 100,
-            width: 60,
-          ),
-          trailing: Column(
-            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-            children: [
-              const Icon(Icons.more_vert),
-              Text(
-                "${priceList.blackTshirtPrice}\$",
-                style:
-                    const TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
-              ),
-            ],
-          ),
-          title: const Text(
-            "T-Shirt",
-            style: TextStyle(
-              fontSize: 16,
-              fontWeight: FontWeight.bold,
-            ),
-          ),
-          subtitle: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              const Row(
-                children: [
-                  Text("Color: Grey"),
-                  SizedBox(width: 16),
-                  Text("Size: L"),
-                ],
-              ),
-              Row(
-                children: [
-                  IconButton(
-                    onPressed: () {
-                      setState(() {
-                        if (priceList.blackTshirtQuantity > 1) {
-                          priceList.blackTshirtQuantity--;
-                          priceList.totalPrice -= priceList.blackTshirtPrice;
-                        }
-                      });
-                    },
-                    icon: const Icon(Icons.remove),
-                  ),
-                  const SizedBox(width: 16),
-                  Text(priceList.blackTshirtQuantity.toString()),
-                  const SizedBox(width: 16),
-                  IconButton(
-                    onPressed: () {
-                      setState(() {
-                        priceList.blackTshirtQuantity++;
-                        priceList.totalPrice += priceList.blackTshirtPrice;
-                      });
-                    },
-                    icon: const Icon(Icons.add),
-                  ),
-                ],
-              ),
-            ],
-          ),
-        ),
-      ),
-    );
-  }
-
-  Widget _sportDress() {
-    return Padding(
-      padding: const EdgeInsets.all(8.0),
-      child: Card(
-        shape: RoundedRectangleBorder(
-          borderRadius: BorderRadius.circular(10),
-        ),
-        child: ListTile(
-          contentPadding:
-              const EdgeInsets.only(left: 20, right: 20, top: 0, bottom: 0),
-          leading: Image.network(
-            'https://blacknavybd.com/wp-content/uploads/2023/05/Black-oversized-tshirt-3.jpg',
-            height: 100,
-            width: 60,
-          ),
-          trailing: Column(
-            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-            children: [
-              const Icon(Icons.more_vert),
-              Text(
-                "${priceList.sportDressPrice}\$",
-                style:
-                    const TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
-              ),
-            ],
-          ),
-          title: const Text(
-            "Sport Dress",
-            style: TextStyle(
-              fontSize: 16,
-              fontWeight: FontWeight.bold,
-            ),
-          ),
-          subtitle: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              const Row(
-                children: [
-                  Text("Color: Black"),
-                  SizedBox(width: 16),
-                  Text("Size: M"),
-                ],
-              ),
-              Row(
-                children: [
-                  IconButton(
-                    onPressed: () {
-                      setState(() {
-                        if (priceList.sportDressQuantity > 1) {
-                          priceList.sportDressQuantity--;
-                          priceList.totalPrice -= priceList.sportDressPrice;
-                        }
-                      });
-                    },
-                    icon: const Icon(Icons.remove),
-                  ),
-                  const SizedBox(width: 16),
-                  Text(priceList.sportDressQuantity.toString()),
-                  const SizedBox(width: 16),
-                  IconButton(
-                    onPressed: () {
-                      setState(() {
-                        priceList.sportDressQuantity++;
-                        priceList.totalPrice += priceList.sportDressPrice;
-                      });
-                    },
-                    icon: const Icon(Icons.add),
-                  ),
-                ],
-              ),
-            ],
-          ),
-        ),
-      ),
-    );
-  }
-
-  Widget _build_checkout_section() {
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.stretch,
-      children: [
-        Row(
-          mainAxisAlignment: MainAxisAlignment.spaceBetween,
-          children: [
-            const Text("Total amount:"),
-            Text(
-              priceList.totalPrice.toString() + "\$",
-              style: const TextStyle(
-                fontSize: 24,
-                fontWeight: FontWeight.bold,
-              ),
-            ),
-          ],
-        ),
-        const SizedBox(height: 20),
-        ElevatedButton(
-          style: ElevatedButton.styleFrom(
-            backgroundColor: const Color(0xFFdb3121),
-            padding: const EdgeInsets.symmetric(vertical: 15),
-            shape: const RoundedRectangleBorder(
-                borderRadius: BorderRadius.all(Radius.circular(30))),
-          ),
-          onPressed: () {
-            CongratsSnackbar(
-                "Congratulations! Your checkout is Done!", context);
-          },
-          child: const Text(
-            "CHECK OUT",
-            style: TextStyle(
-              fontSize: 16,
-              color: Colors.white,
-            ),
-          ),
-        ),
-      ],
+  ButtonStyle _buildIconForm() {
+    return IconButton.styleFrom(
+      backgroundColor: Colors.grey.shade200,
+      foregroundColor: Colors.grey.shade600,
+      elevation: 2,
+      shadowColor: Colors.grey.shade200,
     );
   }
 }
