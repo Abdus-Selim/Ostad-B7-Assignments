@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:module_12_assignment_app/models/product.dart';
 import 'package:module_12_assignment_app/screens/update_product_screen.dart';
+import 'package:module_12_assignment_app/widgets/delete_entry.dart';
 
 class ProductItem extends StatelessWidget {
   const ProductItem({
@@ -25,6 +26,7 @@ class ProductItem extends StatelessWidget {
           Text("Unit Price: \$${product.unitPrice}"),
           Text("Quantity: ${product.quantity}"),
           Text("Total Price: \$${product.totalPrice}"),
+          Text("Product ID: ${product.id}"),
           Divider(),
           ButtonBar(
             children: [
@@ -43,7 +45,9 @@ class ProductItem extends StatelessWidget {
                 label: const Text("Edit"),
               ),
               TextButton.icon(
-                onPressed: () {},
+                onPressed: () {
+                  deleteProduct(context, product.id);
+                },
                 icon: const Icon(
                   Icons.delete_outline,
                   color: Colors.red,
