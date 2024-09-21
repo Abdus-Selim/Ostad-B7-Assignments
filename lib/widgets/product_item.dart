@@ -7,9 +7,11 @@ class ProductItem extends StatelessWidget {
   const ProductItem({
     super.key,
     required this.product,
+    required this.onDelete,
   });
 
   final Product product;
+  final Function onDelete;
 
   @override
   Widget build(BuildContext context) {
@@ -46,7 +48,7 @@ class ProductItem extends StatelessWidget {
               ),
               TextButton.icon(
                 onPressed: () {
-                  deleteProduct(context, product.id);
+                  deleteProduct(context, product.id, onDelete);
                 },
                 icon: const Icon(
                   Icons.delete_outline,
