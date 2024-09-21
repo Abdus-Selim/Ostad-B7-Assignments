@@ -2,6 +2,7 @@ import 'dart:convert';
 
 import 'package:flutter/material.dart';
 import 'package:http/http.dart';
+import 'package:module_12_assignment_app/models/form_validator.dart';
 import 'package:module_12_assignment_app/models/product.dart';
 
 class UpdateProductScreen extends StatefulWidget {
@@ -45,6 +46,9 @@ class _UpdateProductScreenState extends State<UpdateProductScreen> {
               hintText: 'Name',
               labelText: 'Product Name',
             ),
+            validator: (String? value) {
+              return FormValidator.validateValue(value);
+            },
           ),
           TextFormField(
             controller: _unitPriceTEcontroller,
@@ -52,6 +56,9 @@ class _UpdateProductScreenState extends State<UpdateProductScreen> {
               hintText: 'Unit Price',
               labelText: 'Product Price',
             ),
+            validator: (String? value) {
+              return FormValidator.validateValue(value);
+            },
           ),
           TextFormField(
             controller: _totalPriceTEcontroller,
@@ -59,6 +66,9 @@ class _UpdateProductScreenState extends State<UpdateProductScreen> {
               hintText: 'Total Price',
               labelText: 'Total Price',
             ),
+            validator: (String? value) {
+              return FormValidator.validateValue(value);
+            },
           ),
           TextFormField(
             controller: _imageTEcontroller,
@@ -66,6 +76,9 @@ class _UpdateProductScreenState extends State<UpdateProductScreen> {
               hintText: 'Image',
               labelText: 'Product Image',
             ),
+            validator: (String? value) {
+              return FormValidator.validateValue(value);
+            },
           ),
           TextFormField(
             controller: _codeTEcontroller,
@@ -73,6 +86,9 @@ class _UpdateProductScreenState extends State<UpdateProductScreen> {
               hintText: 'Product Code',
               labelText: 'Product Code',
             ),
+            validator: (String? value) {
+              return FormValidator.validateValue(value);
+            },
           ),
           TextFormField(
             controller: _quantityTEcontroller,
@@ -80,15 +96,20 @@ class _UpdateProductScreenState extends State<UpdateProductScreen> {
               hintText: 'Quantity',
               labelText: 'Product Quantity',
             ),
+            validator: (String? value) {
+              return FormValidator.validateValue(value);
+            },
           ),
           const SizedBox(height: 16),
-          ElevatedButton(
-            style: ElevatedButton.styleFrom(
-              fixedSize: const Size.fromWidth(double.maxFinite),
-            ),
-            onPressed: _onTapProductButton,
-            child: const Text("Update"),
-          )
+          _inProgress
+              ? Center(child: CircularProgressIndicator())
+              : ElevatedButton(
+                  style: ElevatedButton.styleFrom(
+                    fixedSize: const Size.fromWidth(double.maxFinite),
+                  ),
+                  onPressed: _onTapProductButton,
+                  child: const Text("Update"),
+                )
         ],
       ),
     );
