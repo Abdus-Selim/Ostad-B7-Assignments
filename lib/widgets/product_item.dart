@@ -34,7 +34,7 @@ class ProductItem extends StatelessWidget {
                     context,
                     MaterialPageRoute(
                       builder: (context) {
-                        return const UpdateProductScreen();
+                        return UpdateProductScreen(product: product);
                       },
                     ),
                   );

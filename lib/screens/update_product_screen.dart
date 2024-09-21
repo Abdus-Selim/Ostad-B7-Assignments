@@ -1,7 +1,12 @@
+import 'dart:convert';
+
 import 'package:flutter/material.dart';
+import 'package:http/http.dart';
+import 'package:module_12_assignment_app/models/product.dart';
 
 class UpdateProductScreen extends StatefulWidget {
-  const UpdateProductScreen({super.key});
+  final Product product;
+  const UpdateProductScreen({super.key, required this.product});
 
   @override
   State<UpdateProductScreen> createState() => _UpdateProductScreenState();
@@ -16,6 +21,7 @@ class _UpdateProductScreenState extends State<UpdateProductScreen> {
   final TextEditingController _quantityTEcontroller = TextEditingController();
   final TextEditingController _codeTEcontroller = TextEditingController();
   final GlobalKey<FormState> _formKey = GlobalKey<FormState>();
+  bool _inProgress = false;
 
   @override
   Widget build(BuildContext context) {
@@ -88,7 +94,51 @@ class _UpdateProductScreenState extends State<UpdateProductScreen> {
     );
   }
 
-  void _onTapProductButton() {}
+  void _onTapProductButton() {
+    if (_formKey.currentState!.validate()) {
+      updateProduct();
+    }
+  }
+
+  Future<void> updateProduct() async {
+    _inProgress = true;
+    setState(() {});
+
+    Uri uri = Uri.parse(
+        "http://164.68.107.70:6060/api/v1/UpdateProduct/${widget.product.id}");
+    Map<String, dynamic> updateBody = {
+      "Img": _imageTEcontroller.text,
+      "ProductCode": _codeTEcontroller.text,
+      "ProductName": _productNameTEcontroller.text,
+      "Qty": _quantityTEcontroller.text,
+      "TotalPrice": _totalPriceTEcontroller.text,
+      "UnitPrice": _unitPriceTEcontroller.text,
+    };
+
+    Response response = await post(
+      uri,
+      headers: {"Content-Type": "application/json"},
+      body: jsonEncode(updateBody),
+    );
+
+    if (response.statusCode == 200) {
+      _clearTestFields();
+      ScaffoldMessenger.of(context)
+          .showSnackBar(const SnackBar(content: Text("Updated succesfully")));
+    }
+
+    _inProgress = false;
+    setState(() {});
+  }
+
+  void _clearTestFields() {
+    _productNameTEcontroller.clear();
+    _unitPriceTEcontroller.clear();
+    _totalPriceTEcontroller.clear();
+    _imageTEcontroller.clear();
+    _codeTEcontroller.clear();
+    _quantityTEcontroller.clear();
+  }
 
   @override
   void dispose() {
